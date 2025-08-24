@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: flow-system
+    name: flow-ai
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install flask==3.0.0 requests==2.31.0 python-dotenv==1.0.0 beautifulsoup4==4.12.2 gunicorn==21.2.0
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
