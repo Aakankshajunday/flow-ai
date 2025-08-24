@@ -64,9 +64,6 @@ class FlowSystem:
         self._current_plan = None
         
         print("🚀 Advanced Flow System initialized with Enhanced Search System V2")
-        
-        # Set up available actions after all methods are defined
-        self._setup_actions()
     
     def parse_prompt(self, prompt: str) -> Plan:
         """Parse any natural language prompt and create an execution plan."""
@@ -1100,6 +1097,8 @@ AI Automation System
 
 # Initialize the Flow system
 flow_system = FlowSystem()
+# Set up available actions after all methods are defined
+flow_system._setup_actions()
 
 @app.route('/')
 def index():
