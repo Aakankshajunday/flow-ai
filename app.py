@@ -1082,7 +1082,7 @@ AI Research System
             self._current_results['results'] = results
             self._current_results['source'] = 'google_places'
             return f"Found {len(results)} restaurants in {location or 'the area'}"
-            else:
+        else:
             return f"No restaurants found in {location or 'the area'}"
     
     def _filter_by_rating(self, parameters: Dict[str, Any]) -> str:
@@ -1246,7 +1246,7 @@ AI Research System
         
         # Check if this is a business search workflow (even without analysis)
         elif self._current_results.get('intent') == 'business_search' and self._current_results.get('results'):
-        results = self._current_results.get('results', [])
+            results = self._current_results.get('results', [])
             
             if format_type == 'business_cards' and isinstance(results, list):
                 html_output = '<div class="results-container">'
@@ -1385,7 +1385,7 @@ AI Research System
                         for key, value in result.items():
                             results[key] = value
                         print(f"✅ Success: {step.action} completed")
-        else:
+                    else:
                         # For any other type, convert to string
                         results[step.action] = str(result)
                         print(f"✅ Success: {step.action} completed")
@@ -1628,33 +1628,33 @@ def index():
 def parse_prompt():
     """Parse a natural language prompt into a plan."""
     try:
-    data = request.get_json()
+        data = request.get_json()
         print(f"🔍 DEBUG /api/parse raw data: {data}")
         
         if data is None:
             print("❌ ERROR: request.get_json() returned None - check Content-Type header")
             return jsonify({'error': 'Invalid JSON data received'}), 400
         
-    prompt = data.get('prompt', '')
+        prompt = data.get('prompt', '')
         print(f"🔍 DEBUG prompt: '{prompt}'")
     
-    if not prompt:
+        if not prompt:
             print("❌ ERROR: No prompt provided in request")
-        return jsonify({'error': 'No prompt provided'}), 400
+            return jsonify({'error': 'No prompt provided'}), 400
     
-    # Parse the prompt into a plan
+        # Parse the prompt into a plan
         print(f"🚀 Attempting to parse prompt: '{prompt}'")
-    plan = flow_system.parse_prompt(prompt)
+        plan = flow_system.parse_prompt(prompt)
         print(f"✅ Plan generated successfully: {plan.goal}")
     
-    # Convert to JSON-serializable format
-    plan_dict = asdict(plan)
-    plan_dict['steps'] = [asdict(step) for step in plan.steps]
+        # Convert to JSON-serializable format
+        plan_dict = asdict(plan)
+        plan_dict['steps'] = [asdict(step) for step in plan.steps]
     
-    return jsonify({
-        'plan': plan_dict,
-        'message': 'Plan generated successfully'
-    })
+        return jsonify({
+            'plan': plan_dict,
+            'message': 'Plan generated successfully'
+        })
         
     except Exception as e:
         print(f"❌ CRASH in parse_prompt: {type(e).__name__}: {str(e)}")
