@@ -540,6 +540,13 @@ class EnhancedSearchSystemV2:
                     filtered_results.append(result)
                     continue
             
+            # For AI automation queries, be very lenient - just check basic quality
+            elif intent == 'ai_automation':
+                # For AI automation, just ensure basic content quality
+                if len(title) >= 3 and len(snippet) >= 5:
+                    filtered_results.append(result)
+                    continue
+            
             # For local business queries, apply stricter filtering
             elif intent == 'local_business':
                 # Hard relevance gate 1: Must contain at least TWO key phrases for high confidence
@@ -621,6 +628,12 @@ class EnhancedSearchSystemV2:
         action_words = ['find', 'top', 'best', 'compare', 'search', 'locate']
         for word in words:
             if word.lower() in action_words and word.lower() not in [p.split()[0] for p in key_phrases]:
+                key_phrases.append(word.lower())
+        
+        # Priority 5: AI and technology words (for AI automation queries)
+        ai_tech_words = ['ai', 'artificial', 'intelligence', 'automation', 'workflow', 'machine', 'learning', 'ml', 'robotic', 'process', 'rpa', 'business', 'software', 'platform', 'tools', 'technology', 'tech', 'digital', 'smart', 'intelligent']
+        for word in words:
+            if word.lower() in ai_tech_words and word.lower() not in [p.split()[0] for p in key_phrases]:
                 key_phrases.append(word.lower())
         
         # Remove duplicates and return
@@ -1218,6 +1231,66 @@ Generated automatically by Flow System - AI Automation Workflow
             results['note'] = 'Filtered for AI automation focus and recent content'
         
         return results
+
+    def ai_automation_search(self, query: str, count: int = 5) -> List[SearchResult]:
+        """Search for AI automation focused results."""
+        print(f"🤖 AI Automation Search: {query} (count: {count})")
+        
+        # Use the unified search with AI automation focus
+        results = self.unified_search(query, count)
+        
+        if results and isinstance(results, dict) and 'results' in results:
+            # Filter for AI automation relevance
+            ai_filtered = []
+            for result in results['results']:
+                title = result.get('title', '').lower()
+                snippet = result.get('snippet', '').lower()
+                
+                # Check for AI automation keywords
+                ai_keywords = ['ai', 'artificial intelligence', 'automation', 'workflow', 'machine learning', 'ml', 'robotic', 'process', 'rpa', 'intelligent', 'smart']
+                
+                relevance_score = 0
+                for keyword in ai_keywords:
+                    if keyword in title:
+                        relevance_score += 2
+                    if keyword in snippet:
+                        relevance_score += 1
+                
+                if relevance_score > 0:
+                    result['ai_relevance_score'] = relevance_score
+                    ai_filtered.append(result)
+            
+            # Sort by AI relevance score
+            ai_filtered.sort(key=lambda x: x.get('ai_relevance_score', 0), reverse=True)
+            
+            return ai_filtered[:count]
+        elif isinstance(results, list):
+            # If results is already a list, filter it directly
+            ai_filtered = []
+            for result in results:
+                title = result.get('title', '').lower()
+                snippet = result.get('snippet', '').lower()
+                
+                # Check for AI automation keywords
+                ai_keywords = ['ai', 'artificial intelligence', 'automation', 'workflow', 'machine learning', 'ml', 'robotic', 'process', 'rpa', 'intelligent', 'smart']
+                
+                relevance_score = 0
+                for keyword in ai_keywords:
+                    if keyword in title:
+                        relevance_score += 2
+                    if keyword in snippet:
+                        relevance_score += 1
+                
+                if relevance_score > 0:
+                    result['ai_relevance_score'] = relevance_score
+                    ai_filtered.append(result)
+            
+            # Sort by AI relevance score
+            ai_filtered.sort(key=lambda x: x.get('ai_relevance_score', 0), reverse=True)
+            
+            return ai_filtered[:count]
+        
+        return []
 
 # Example usage
 if __name__ == "__main__":

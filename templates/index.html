@@ -473,7 +473,7 @@
                 <i class="fas fa-brain"></i>
                 <h3>AI-Powered Intelligence</h3>
                 <p>Advanced natural language processing with intent detection and smart query routing</p>
-            </div>
+                    </div>
             <div class="feature-card">
                 <i class="fas fa-search-plus"></i>
                 <h3>Enhanced Search</h3>
@@ -488,9 +488,9 @@
                 <i class="fas fa-chart-bar"></i>
                 <h3>Analytics & Insights</h3>
                 <p>Comprehensive metrics, quality analysis, and performance optimization</p>
-            </div>
-        </div>
-
+                    </div>
+                </div>
+                
         <!-- Examples Section -->
         <div class="card examples-section">
             <h2><i class="fas fa-lightbulb"></i> Example Prompts</h2>
@@ -505,8 +505,8 @@
                     <p>Research latest trends in AI marketing tools and summarize findings</p>
                 </div>
                 <div class="example-card" onclick="loadExample('competitor_analysis')">
-                    <h4><i class="fas fa-users"></i> Competitor Analysis</h4>
-                    <p>Analyze the top 5 competitors in the workflow automation space, compare their features, and identify market gaps</p>
+                    <h4><i class="fas fa-users"></i> Business Competitor Analysis</h4>
+                    <p>Find top 5 coffee shops in San Francisco, compare ratings, and analyze market positioning</p>
                 </div>
                 <div class="example-card" onclick="loadExample('technical_research')">
                     <h4><i class="fas fa-code"></i> Technical Research</h4>
@@ -522,7 +522,7 @@
                 <h2><i class="fas fa-keyboard"></i> Natural Language Input</h2>
                 <div class="input-group">
                     <label for="prompt">Describe what you want to accomplish:</label>
-                    <textarea id="prompt" rows="4" placeholder="Example: Compile the top 5 items about 'AI automation', summarize each in ~1 sentence, and prepare an email draft to founders@company.com"></textarea>
+                    <textarea id="prompt" rows="4" placeholder="Example: Compile the top 5 items about 'AI automation', summarize each in ~1 sentence, and prepare an email draft to founders@company.com" autofocus></textarea>
                 </div>
                 <div class="input-group">
                     <label for="context">Context (Optional):</label>
@@ -530,6 +530,7 @@
                         <option value="">Select context...</option>
                         <option value="ai_automation">AI Automation</option>
                         <option value="business">Business Research</option>
+                        <option value="local_business">Local Business</option>
                         <option value="technical">Technical Analysis</option>
                         <option value="market_research">Market Research</option>
                     </select>
@@ -543,8 +544,8 @@
                     </button>
                 </div>
             </div>
-        </div>
-
+                </div>
+                
         <!-- Plan Display Section -->
         <div class="card" id="planSection" style="display: none;">
             <h2><i class="fas fa-list-check"></i> Execution Plan</h2>
@@ -554,14 +555,14 @@
                     <i class="fas fa-play"></i> Execute Plan
                 </button>
             </div>
-        </div>
+            </div>
 
-        <!-- Results Section -->
+            <!-- Results Section -->
         <div class="card results-section" id="resultsSection" style="display: none;">
             <h2><i class="fas fa-chart-bar"></i> Execution Results</h2>
             <div id="resultsContent"></div>
-        </div>
-
+                </div>
+                
         <!-- System Status -->
         <div class="card">
             <h2><i class="fas fa-server"></i> System Status</h2>
@@ -573,11 +574,11 @@
                 <div class="status success">
                     <i class="fas fa-check-circle"></i>
                     <span>Search Engine: Ready</span>
-                </div>
+            </div>
                 <div class="status success">
                     <i class="fas fa-check-circle"></i>
                     <span>AI Models: Loaded</span>
-                </div>
+        </div>
                 <div class="status success">
                     <i class="fas fa-check-circle"></i>
                     <span>APIs: Connected</span>
@@ -590,12 +591,30 @@
         let currentPlan = null;
         let currentResults = null;
 
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            ensureTextareaEnabled();
+            console.log('🚀 Flow System initialized - textarea should be ready for input');
+        });
+
+        // Ensure textarea is always enabled
+        function ensureTextareaEnabled() {
+            const textarea = document.getElementById('prompt');
+            if (textarea) {
+                textarea.disabled = false;
+                textarea.readOnly = false;
+                textarea.style.opacity = '1';
+                textarea.style.pointerEvents = 'auto';
+                console.log('✅ Textarea enabled and ready for input');
+            }
+        }
+
         // Load example prompts
         function loadExample(type) {
             const examples = {
                 ai_automation: "Compile the top 5 items about 'AI automation', summarize each in ~1 sentence, and prepare an email draft to founders@company.com",
                 market_research: "Research the latest trends in AI marketing tools for 2025, find top 10 tools, and create a market analysis summary",
-                competitor_analysis: "Analyze the top 5 competitors in the workflow automation space, compare their features, and identify market gaps",
+                competitor_analysis: "Find top 5 coffee shops in San Francisco, compare ratings, and analyze market positioning",
                 technical_research: "Find the latest developments in machine learning automation, research top 5 papers, and summarize key innovations"
             };
             
@@ -621,44 +640,44 @@
             const prompt = document.getElementById('prompt').value.trim();
             const context = document.getElementById('context').value;
             
-            if (!prompt) {
-                alert('Please enter a prompt first!');
-                return;
-            }
+                if (!prompt) {
+                    alert('Please enter a prompt first!');
+                    return;
+                }
 
             // Show loading state
             const parseBtn = document.querySelector('.btn-primary');
-            const originalText = parseBtn.innerHTML;
+                const originalText = parseBtn.innerHTML;
             parseBtn.innerHTML = '<div class="loading"></div> Parsing...';
-            parseBtn.disabled = true;
+                parseBtn.disabled = true;
 
-            try {
-                const response = await fetch('/api/parse', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                try {
+                    const response = await fetch('/api/parse', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                     body: JSON.stringify({ prompt, context })
-                });
+                    });
 
-                const data = await response.json();
-                
+                    const data = await response.json();
+                    
                 if (data.plan) {
                     currentPlan = data.plan;
                     displayPlan(data.plan);
                     document.getElementById('planSection').style.display = 'block';
-                } else {
+                    } else {
                     alert('Failed to parse prompt: ' + (data.message || 'Unknown error'));
-                }
-            } catch (error) {
+                    }
+                } catch (error) {
                 console.error('Error:', error);
                 alert('Error parsing prompt. Please try again.');
-            } finally {
+                } finally {
                 // Restore button state
-                parseBtn.innerHTML = originalText;
-                parseBtn.disabled = false;
+                    parseBtn.innerHTML = originalText;
+                    parseBtn.disabled = false;
+                }
             }
-        }
 
         // Display plan
         function displayPlan(plan) {
@@ -671,8 +690,8 @@
                         <div><strong>Estimated Time:</strong> ${plan.estimated_time}</div>
                         <div><strong>Steps:</strong> ${plan.steps.length}</div>
                         <div><strong>Created:</strong> ${new Date(plan.created_at).toLocaleString()}</div>
+                        </div>
                     </div>
-                </div>
                 <h3 style="color: #4a5568; margin-bottom: 15px;">📋 Execution Steps:</h3>
             `;
 
@@ -693,50 +712,50 @@
                     </div>
                 `;
             });
-
+                
             planContent.innerHTML = html;
-        }
+            }
 
         // Execute plan
         async function executePlan() {
             if (!currentPlan) {
-                alert('No plan to execute!');
-                return;
-            }
+                    alert('No plan to execute!');
+                    return;
+                }
 
             // Show loading state
             const executeBtn = document.querySelector('.btn-success');
-            const originalText = executeBtn.innerHTML;
+                const originalText = executeBtn.innerHTML;
             executeBtn.innerHTML = '<div class="loading"></div> Executing...';
-            executeBtn.disabled = true;
+                executeBtn.disabled = true;
 
-            try {
-                const response = await fetch('/api/execute', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                try {
+                    const response = await fetch('/api/execute', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                     body: JSON.stringify({ plan: currentPlan })
-                });
+                    });
 
-                const data = await response.json();
-                
+                    const data = await response.json();
+                    
                 if (data.success) {
                     currentResults = data;
                     displayResults(data);
                     document.getElementById('resultsSection').style.display = 'block';
-                } else {
+                    } else {
                     alert('Plan execution failed: ' + data.message);
-                }
-            } catch (error) {
+                    }
+                } catch (error) {
                 console.error('Error:', error);
                 alert('Error executing plan. Please try again.');
-            } finally {
+                } finally {
                 // Restore button state
-                executeBtn.innerHTML = originalText;
-                executeBtn.disabled = false;
+                    executeBtn.innerHTML = originalText;
+                    executeBtn.disabled = false;
+                }
             }
-        }
 
         // Display results
         function displayResults(data) {
@@ -806,6 +825,33 @@
                     html += '</div>';
                 }
 
+                html += '</div>';
+            }
+
+            // Show execution results if available (new structure)
+            if (data.execution_results) {
+                html += '<div class="execution-results">';
+                html += '<h3><i class="fas fa-play-circle"></i> Execution Results:</h3>';
+                
+                // Show the final display_results output if available
+                if (data.execution_results.display_results) {
+                    html += '<div class="final-results">';
+                    html += '<h4>🎯 Final Results:</h4>';
+                    html += data.execution_results.display_results;
+                    html += '</div>';
+                }
+
+                // Show other execution results
+                Object.entries(data.execution_results).forEach(([action, result]) => {
+                    if (action !== 'display_results') {
+                        html += `
+                            <div class="execution-step" style="background: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+                                <strong>${action}:</strong> ${result}
+                    </div>
+                        `;
+                    }
+                });
+                
                 html += '</div>';
             }
 
